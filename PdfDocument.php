@@ -42,9 +42,11 @@ class PdfDocument extends AbstractDocument
 	 */
 	public function render($name, $captureOutput = false)
 	{
-		return $this->renderInternal(
+		$html = $this->renderInternal($this->layout, $this->templates);
+		$this->mpdf->WriteHTML($html);
+
+		return $this->mpdf->Output(
 			$name . '.' . static::FILE_EXTENSION,
-			$this->templates,
 			$captureOutput ? static::OUTPUT_TO_STRING : static::OUTPUT_TO_BROWSER
 		);
 	}
@@ -54,7 +56,9 @@ class PdfDocument extends AbstractDocument
 	 */
 	public function save($fileName)
 	{
-		$this->renderInternal($fileName, $this->templates, static::OUTPUT_TO_FILE);
+		$html = $this->renderInternal($this->layout, $this->templates);
+		$this->mpdf->WriteHTML($html);
+		$this->mpdf->Output($fileName, static::OUTPUT_TO_FILE);
 	}
 
 	/**
@@ -93,32 +97,5 @@ class PdfDocument extends AbstractDocument
 		$mpdf->SetProtection(['copy', 'print', 'print-highres'], null, uniqid(), 128);
 
 		return $mpdf;
-	}
-
-	/**
-	 * @param string $name
-	 * @param array $templates
-	 * @param string $destination
-	 * @return string
-	 */
-	protected function renderInternal($name, $templates, $destination)
-	{
-		// render html
-		$html = '';
-		foreach ($templates as $template) {
-			if (is_array($template))
-				$html .= $this->renderTemplate($template['template'], $template['data'], true);
-			else
-				$html .= $template;
-		}
-		$html = $this->renderTemplate($this->layout, [
-			'content' => $html,
-			'options' => $this->options,
-		], true);
-
-		// render pdf
-		$this->mpdf->WriteHTML($html);
-
-		return $this->mpdf->Output($name, $destination);
 	}
 }

@@ -6,7 +6,7 @@
 	Таблица с разными данными
 </p>
 
-<table class="table" border="1" style="width: 100%">
+<table class="table" style="width: 100%">
 	<tr>
 		<th>Столбец1</th>
 		<th>Столбец2</th>

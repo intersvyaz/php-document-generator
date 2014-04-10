@@ -15,6 +15,8 @@ class HtmlDocument extends AbstractDocument
 	 */
 	public function render($name, $captureOutput = false)
 	{
+		$doc = $this->renderInternal($this->layout, $this->templates);
+
 		if (!$captureOutput) {
 			$name = $name . static::FILE_EXTENSION;
 			header('Content-disposition: inline; filename="' . $name . '"');
@@ -22,9 +24,11 @@ class HtmlDocument extends AbstractDocument
 			header('Pragma: public');
 			header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 			header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+			echo $doc;
+			return null;
+		} else {
+			return $doc;
 		}
-
-		return $this->renderInternal($this->templates, $captureOutput);
 	}
 
 	/**
@@ -32,26 +36,7 @@ class HtmlDocument extends AbstractDocument
 	 */
 	public function save($fileName)
 	{
-		$doc = $this->renderInternal($this->templates, true);
+		$doc = $this->renderInternal($this->layout, $this->templates);
 		file_put_contents($fileName, $doc);
-	}
-
-	/**
-	 * @param $templates
-	 * @param $captureOutput
-	 * @return string
-	 */
-	protected function renderInternal($templates, $captureOutput)
-	{
-		// render html
-		$html = '';
-		foreach ($templates as $template) {
-			if (is_array($template))
-				$html .= $this->renderTemplate($template['template'], $template['data'], true);
-			else
-				$html .= $template;
-		}
-
-		return $this->renderTemplate($this->layout, ['content' => $html], $captureOutput);
 	}
 }

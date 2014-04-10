@@ -8,7 +8,7 @@ class PdfDocumentTest extends \PHPUnit_Framework_TestCase
 {
 	public function testExamples()
 	{
-		$outputFile = __DIR__ . '/example_ru.html';
+		$outputFile = __DIR__ . '/example_ru.pdf';
 
 		$doc = new PdfDocument();
 		$doc->addTemplate(__DIR__ . '/../../examples/example_ru.php')
